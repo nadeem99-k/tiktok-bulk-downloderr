@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Bulk Downloader | Premium Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="blob-container">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fab fa-tiktok"></i>
+                <h1>Bulk<span>Downloader</span></h1>
+            </div>
+            <p class="subtitle">Extract and download TikTok videos in high quality without watermarks</p>
+        </header>
+
+        <main>
+            <div class="card glass">
+                <div class="input-group">
+                    <label for="username">TikTok Username</label>
+                    <div class="input-wrapper">
+                        <span class="at">@</span>
+                        <input type="text" id="username" placeholder="e.g. khaby.lame" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="limit">Video Limit</label>
+                    <div class="range-wrapper">
+                        <input type="range" id="limit" min="1" max="100" value="10">
+                        <span id="limit-val">10</span>
+                    </div>
+                </div>
+
+                <button id="extract-btn" class="primary-btn">
+                    <span class="btn-text">Extract Videos</span>
+                    <span class="loader hidden"><i class="fas fa-circle-notch fa-spin"></i></span>
+                </button>
+            </div>
+
+            <div id="results-section" class="hidden">
+                <div class="status-bar glass">
+                    <div class="status-info">
+                        <span id="video-count">0</span> Videos Found
+                    </div>
+                    <button id="download-all-btn" class="secondary-btn">
+                        <i class="fas fa-download"></i> Download All
+                    </button>
+                </div>
+
+                <div id="video-grid" class="video-grid">
+                    <!-- Videos will be injected here -->
+                </div>
+            </div>
+
+            <div id="progress-container" class="hidden">
+                <div class="progress-card glass">
+                    <h3>Downloading Videos...</h3>
+                    <div class="progress-bar-bg">
+                        <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <p id="progress-text">0 / 0 Completed</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Premium TikTok Downloader. For personal use only.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
