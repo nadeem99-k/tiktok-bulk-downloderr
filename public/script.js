@@ -34,6 +34,13 @@ extractBtn.addEventListener('click', async () => {
 
     try {
         const response = await fetch(`/api/scrape?username=${username}&limit=${limitInput.value}`);
+
+        // Safe JSON parse — avoids crash if server returns HTML error page
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            throw new Error('Server error: yt-dlp may not be installed on the deployment server.');
+        }
+
         const data = await response.json();
 
         if (data.error) throw new Error(data.error);
@@ -54,7 +61,7 @@ extractBtn.addEventListener('click', async () => {
         }
     } catch (err) {
         console.error(err);
-        alert('Error: ' + err.message);
+        alert('❌ Error: ' + err.message);
     } finally {
         setLoading(false);
     }

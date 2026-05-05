@@ -6,7 +6,7 @@ const cors = require('cors');
 const { exec } = require('child_process');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -20,24 +20,33 @@ app.get('/api/scrape', async (req, res) => {
     if (!username) return res.status(400).json({ error: 'Username is required' });
 
     const maxLimit = parseInt(limit) || 10;
-    console.log(`Scraping up to ${maxLimit} videos for @${username} using yt-dlp...`);
+    console.log(`Scraping up to ${maxLimit} videos for @${username}...`);
 
-    // Use yt-dlp to get video IDs which is much faster and doesn't need a browser
-    // We use python -m yt_dlp to ensure we use the updated version
-    const command = `python -m yt_dlp --get-id --flat-playlist --playlist-end ${maxLimit} https://www.tiktok.com/@${username}`;
+    // Try yt-dlp first, fall back to python -m yt_dlp
+    const commands = [
+        `yt-dlp --get-id --flat-playlist --playlist-end ${maxLimit} https://www.tiktok.com/@${username}`,
+        `python -m yt_dlp --get-id --flat-playlist --playlist-end ${maxLimit} https://www.tiktok.com/@${username}`,
+        `python3 -m yt_dlp --get-id --flat-playlist --playlist-end ${maxLimit} https://www.tiktok.com/@${username}`
+    ];
 
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${error.message}`);
-            return res.status(500).json({ error: 'Failed to scrape videos. Make sure the username is correct and public.' });
+    const tryCommand = (index) => {
+        if (index >= commands.length) {
+            console.error('yt-dlp not found on server');
+            return res.status(500).json({ error: 'yt-dlp is not installed on the server. Please install it first.' });
         }
-        
-        const videoIds = stdout.trim().split(/\r?\n/).filter(id => id.length > 0);
-        const videoUrls = videoIds.map(id => `https://www.tiktok.com/@${username}/video/${id}`);
-        
-        console.log(`Found ${videoUrls.length} videos.`);
-        res.json({ videos: videoUrls });
-    });
+        exec(commands[index], (error, stdout, stderr) => {
+            if (error) {
+                console.log(`Command ${index} failed, trying next...`);
+                return tryCommand(index + 1);
+            }
+            const videoIds = stdout.trim().split(/\r?\n/).filter(id => id.length > 0);
+            const videoUrls = videoIds.map(id => `https://www.tiktok.com/@${username}/video/${id}`);
+            console.log(`Found ${videoUrls.length} videos.`);
+            res.json({ videos: videoUrls });
+        });
+    };
+
+    tryCommand(0);
 });
 
 app.post('/api/download', async (req, res) => {
